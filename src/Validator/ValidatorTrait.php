@@ -1,11 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: steverhoades
- * Date: 10/11/16
- * Time: 1:33 PM
+ * @author Steve Rhoades <sedonami@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT
  */
-
 namespace OpenIDConnectClient\Validator;
 
 

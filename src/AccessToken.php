@@ -1,11 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: steverhoades
- * Date: 10/10/16
- * Time: 2:56 PM
+ * @author Steve Rhoades <sedonami@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT
  */
-
 namespace OpenIDConnectClient;
 
 use Lcobucci\JWT\Parser;
