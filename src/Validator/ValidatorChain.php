@@ -9,20 +9,48 @@ use Lcobucci\JWT\Token;
 
 class ValidatorChain
 {
-    protected $validators;
+    /**
+     * @var array
+     */
+    protected $validators = [];
 
+    /**
+     * @var array
+     */
     protected $messages = [];
 
-    public function setValidators($validators)
+    /**
+     * @param ValidatorInterface[] $validators
+     * @return $this
+     */
+    public function setValidators(array $validators)
     {
-        $this->validators = $validators;
+        $this->validators = [];
+
+        foreach ($validators as $validator) {
+            $this->addValidator($validator);
+        }
+
+        return $this;
     }
 
-    public function addValidator($claim, $validator)
+    /**
+     * @param string $claim
+     * @param ValidatorInterface $validator
+     * @return $this
+     */
+    public function addValidator(ValidatorInterface $validator)
     {
-        $this->validators[$claim] = $validator;
+        $this->validators[$validator->getName()] = $validator;
+
+        return $this;
     }
 
+    /**
+     * @param array $data
+     * @param Token $token
+     * @return bool
+     */
     public function isValid(array $data, Token $token)
     {
         $valid = true;
@@ -41,16 +69,27 @@ class ValidatorChain
         return $valid;
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     public function hasValidator($name)
     {
         return !empty($this->validators[$name]);
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     */
     public function getValidator($name)
     {
         return $this->validators[$name];
     }
 
+    /**
+     * @return array
+     */
     public function getMessages()
     {
         return $this->messages;
