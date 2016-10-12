@@ -21,7 +21,7 @@ The following versions of PHP are supported.
                 'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
                 'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
                 'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',
-                'publicKey'                 => 'file://' . UNITY_INSTALL_ROOT . '/unity_applications/unity/config/public.key',
+                'publicKey'                 => 'file:///myproj/data/public.key',
             ],
             [
                 'signer' => $signer
@@ -50,6 +50,6 @@ The MIT License (MIT). Please see [License File](https://github.com/steverhoades
 [PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
 
 ## TODO
-- [] add support for OpenID Connect [Authentication Request Parameters](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)
-- [] add tests
-- [] check implicit and hybrid flow support
+- [ ] add support for OpenID Connect [Authentication Request Parameters](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)
+- [ ] add tests
+- [ ] check implicit and hybrid flow support
