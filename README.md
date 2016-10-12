@@ -21,7 +21,7 @@ The following versions of PHP are supported.
                 'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
                 'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
                 'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',
-                'publicKey'                 => 'file://' . UNITY_INSTALL_ROOT . '/unity_applications/unity/config/public.key',
+                'publicKey'                 => 'file:///myproj/data/public.key',
             ],
             [
                 'signer' => $signer
