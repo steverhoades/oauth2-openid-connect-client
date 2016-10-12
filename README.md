@@ -59,6 +59,15 @@ $allClaims      = $idToken->getClaims();
 
 ```
 
+### Run the Example
+An example client has been provided and can be found in the /example directory of this repository.  To run the example you can utilize PHPs built-in web server.
+```bash
+$ php -S php -S localhost:8081 client.php
+```
+Then open this link: [http://localhost:8081/](http://localhost:8081/)
+
+This should send you to bshaffer's OAuth2 Live OpenID Connect Demo site.
+
 ### Token Verification
 The id_token is verified using the lcobucci/jwt library.  You will need to pass the appropriate signer and publicKey to the OpenIdConnectProvider.
 
