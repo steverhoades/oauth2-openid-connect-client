@@ -62,7 +62,7 @@ $allClaims      = $idToken->getClaims();
 ### Run the Example
 An example client has been provided and can be found in the /example directory of this repository.  To run the example you can utilize PHPs built-in web server.
 ```bash
-$ php -S php -S localhost:8081 client.php
+$ php -S localhost:8081 client.php
 ```
 Then open this link: [http://localhost:8081/](http://localhost:8081/)
 
