@@ -92,4 +92,4 @@ The MIT License (MIT). Please see [License File](https://github.com/steverhoades
 - [ ] add support for OpenID Connect [Authentication Request Parameters](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)
 - [ ] add tests
 - [ ] check implicit and hybrid flow support
-- [ ] example endpoints showing usage
+- [x] example endpoints showing usage
