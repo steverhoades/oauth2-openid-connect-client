@@ -13,9 +13,9 @@ The following versions of PHP are supported.
 ## Usage
 You may test your OpenID Connect Client against [bshaffer's demo oauth2 server](https://github.com/bshaffer/oauth2-demo-php).
 ```php
-$signer = new Sha256();
-
-return new OpenIdConnectProvider([
+<?php
+$signer   = new \Lcobucci\JWT\Signer\Rsa\Sha256();
+$provider = new \OpenIDConnectClient\OpenIdConnectProvider([
         'clientId'                => 'demoapp',   
         'clientSecret'            => 'demopass',  
         // Your server
@@ -31,6 +31,32 @@ return new OpenIdConnectProvider([
         'signer' => $signer
     ]
 );
+
+// send the authorization request
+if (empty($_GET['code'])) {
+    $redirectUrl = $provider->getAuthorizationUrl();
+    header(sprintf('Location: %s', $redirectUrl), true, 302); 
+    return;
+}
+
+// receive authorization response
+try {
+    $token = $provider->getAccessToken('authorization_code', [
+        'code' => $_GET['code']
+    ]);
+} catch (\OpenIDConnectClient\InvalidTokenException $e) {
+    $errors = $provider->getValidatorChain()->getMessages();
+    return;
+}
+
+$accessToken    = $token->getToken();
+$refreshToken   = $token->getRefreshToken();
+$expires        = $token->getExpires();
+$hasExpired     = $token->hasExpired();
+$idToken        = $token->getIdToken();
+$email          = $idToken->getClaim('email', false);
+$allClaims      = $idToken->getClaims();
+
 ```
 
 ### Token Verification
