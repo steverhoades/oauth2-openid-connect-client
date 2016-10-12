@@ -51,18 +51,21 @@ class ValidatorChain
      * @param Token $token
      * @return bool
      */
-    public function isValid(array $data, Token $token)
+    public function validate(array $data, Token $token)
     {
         $valid = true;
-        foreach ($data as $claim => $claimValue) {
-            if (!$token->hasClaim($claim) || !$this->hasValidator($claim)) {
+        foreach ($this->validators as $claim => $validator) {
+            if ($validator->isRequired() && false === $token->hasClaim($claim)) {
+                $valid = false;
+                $this->messages[$claim] = sprintf("Missing required value for claim %s", $claim);
+                continue;
+            } else if (empty($data[$claim]) || false === $token->hasClaim($claim)) {
                 continue;
             }
 
-            $validator = $this->getValidator($claim);
-            if (!$validator->isValid($claimValue, $token->getClaim($claim))) {
+            if (!$validator->isValid($data[$claim], $token->getClaim($claim))) {
                 $valid = false;
-                $this->messages[] = $validator->getMessage();
+                $this->messages[$claim] = $validator->getMessage();
             }
         }
 
@@ -75,7 +78,7 @@ class ValidatorChain
      */
     public function hasValidator($name)
     {
-        return !empty($this->validators[$name]);
+        return array_key_exists($name, $this->validators);
     }
 
     /**

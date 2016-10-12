@@ -13,9 +13,12 @@ trait ValidatorTrait
 
     protected $message;
 
-    public function __construct($name)
+    protected $required;
+
+    public function __construct($name, $required = false)
     {
-        $this->name = $name;
+        $this->name     = $name;
+        $this->required = $required;
     }
 
     public function getName()
@@ -26,5 +29,10 @@ trait ValidatorTrait
     public function getMessage()
     {
         return $this->message;
+    }
+
+    public function isRequired()
+    {
+        return $this->required;
     }
 }

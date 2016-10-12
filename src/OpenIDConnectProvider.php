@@ -14,6 +14,7 @@ use OpenIDConnectClient\Exception\InvalidTokenException;
 use OpenIDConnectClient\Validator\EqualsTo;
 use OpenIDConnectClient\Validator\GreaterOrEqualsTo;
 use OpenIDConnectClient\Validator\LesserOrEqualsTo;
+use OpenIDConnectClient\Validator\NotEmpty;
 use OpenIDConnectClient\Validator\ValidatorChain;
 use League\OAuth2\Client\Grant\AbstractGrant;
 
@@ -48,12 +49,12 @@ class OpenIDConnectProvider extends GenericProvider
 
         $this->validatorChain = new ValidatorChain();
         $this->validatorChain->setValidators([
-            new LesserOrEqualsTo('iat'),
+            new LesserOrEqualsTo('iat', true),
+            new GreaterOrEqualsTo('exp', true),
+            new EqualsTo('iss', true),
+            new EqualsTo('aud', true),
+            new NotEmpty('sub', true),
             new LesserOrEqualsTo('nbf'),
-            new GreaterOrEqualsTo('exp'),
-            new EqualsTo('iss'),
-            new EqualsTo('aud'),
-            new EqualsTo('sub'),
             new EqualsTo('jti'),
             new EqualsTo('azp'),
             new EqualsTo('nonce'),
@@ -105,9 +106,8 @@ class OpenIDConnectProvider extends GenericProvider
         $token       = $accessToken->getIdToken();
 
         // id_token is empty.
-        // TODO throw an exception here?
         if (null === $token) {
-            return $accessToken;
+            throw new InvalidTokenException('Expected an id_token but did not receive one from the authorization server.');
         }
 
         // If the ID Token is received via direct communication between the Client and the Token Endpoint
@@ -118,7 +118,7 @@ class OpenIDConnectProvider extends GenericProvider
         //
         // The alg value SHOULD be the default of RS256 or the algorithm sent by the Client in the
         // id_token_signed_response_alg parameter during Registration.
-        if (!$token->verify($this->signer, $this->getPublicKey())) {
+        if (false === $token->verify($this->signer, $this->getPublicKey())) {
             throw new InvalidTokenException('Received an invalid id_token from authorization server.');
         }
 
@@ -157,8 +157,8 @@ class OpenIDConnectProvider extends GenericProvider
             $data['azp'] = $this->clientId;
         }
 
-        if (!$this->validatorChain->isValid($data, $token)) {
-            throw new InvalidTokenException('Some values in the token were not valid.');
+        if (false === $this->validatorChain->validate($data, $token)) {
+            throw new InvalidTokenException('The id_token did not pass validation.');
         }
 
         return $accessToken;
