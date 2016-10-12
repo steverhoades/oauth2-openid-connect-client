@@ -122,20 +122,6 @@ class OpenIDConnectProvider extends GenericProvider
             throw new InvalidTokenException('Received an invalid id_token from authorization server.');
         }
 
-        $validatorChain = new ValidatorChain();
-        $validatorChain->setValidators([
-            new LesserOrEqualsTo('iat'),
-            new LesserOrEqualsTo('nbf'),
-            new GreaterOrEqualsTo('exp'),
-            new EqualsTo('iss'),
-            new EqualsTo('aud'),
-            new EqualsTo('sub'),
-            new EqualsTo('jti'),
-            new EqualsTo('azp'),
-            new EqualsTo('nonce'),
-            new LesserOrEqualsTo('auth_time')
-        ]);
-
         // validations
         // @see http://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation
         // validate the iss (issuer)
@@ -171,7 +157,7 @@ class OpenIDConnectProvider extends GenericProvider
             $data['azp'] = $this->clientId;
         }
 
-        if (!$validatorChain->isValid($data, $token)) {
+        if (!$this->validatorChain->isValid($data, $token)) {
             throw new InvalidTokenException('Some values in the token were not valid.');
         }
 
