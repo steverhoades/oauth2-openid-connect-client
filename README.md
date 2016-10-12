@@ -11,16 +11,20 @@ The following versions of PHP are supported.
 * PHP 7.0
 
 ## Usage
+You may test your OpenID Connect Client against [bshaffer's demo oauth2 server](https://github.com/bshaffer/oauth2-demo-php).
 ```php
         $signer = new Sha256();
 
         return new OpenIdConnectProvider([
-                'clientId'                => 'demoapp',    // The client ID assigned to you by the provider
-                'clientSecret'            => 'demopass',   // The client password assigned to you by the provider
-                'redirectUri'             => 'http://example.com/your-redirect-url/',
+                'clientId'                => 'demoapp',   
+                'clientSecret'            => 'demopass',  
+                // Your server
+                'redirectUri'             => 'http://example.com/your-redirect-url/',                
                 'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
                 'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
-                'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',
+                'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',                
+                // Find the public key here: https://github.com/bshaffer/oauth2-demo-php/blob/master/data/pubkey.pem
+                // to test against brentertainment.com
                 'publicKey'                 => 'file:///myproj/data/public.key',
             ],
             [
@@ -53,3 +57,4 @@ The MIT License (MIT). Please see [License File](https://github.com/steverhoades
 - [ ] add support for OpenID Connect [Authentication Request Parameters](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)
 - [ ] add tests
 - [ ] check implicit and hybrid flow support
+- [ ] example endpoints showing usage

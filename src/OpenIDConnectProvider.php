@@ -190,7 +190,7 @@ class OpenIDConnectProvider extends GenericProvider
     {
         return ' ';
     }
-    
+
     /**
      * @return ValidatorChain|void
      */
