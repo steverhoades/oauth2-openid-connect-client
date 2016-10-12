@@ -34,7 +34,7 @@ try {
     $token = $provider->getAccessToken('authorization_code', [
         'code' => $_GET['code']
     ]);
-} catch (\OpenIDConnectClient\InvalidTokenException $e) {
+} catch (\OpenIDConnectClient\Exception\InvalidTokenException $e) {
     $errors = $provider->getValidatorChain()->getMessages();
     echo $e->getMessage();
     var_dump($errors);
