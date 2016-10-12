@@ -1,5 +1,5 @@
 {
-    "name": "steverhoades/oauth2-openid-client",
+    "name": "steverhoades/oauth2-openid-connect-client",
     "description": "OAuth2 OpenID Connect Client that utilizes the PHP Leagues OAuth2 Client",
     "authors": [
         {
