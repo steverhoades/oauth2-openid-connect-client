@@ -110,8 +110,6 @@ class OpenIDConnectProvider extends GenericProvider
         $accessToken = parent::getAccessToken($grant, $options);
         $token       = $accessToken->getIdToken();
 
-        var_dump($token->getClaims());
-
         // id_token is empty.
         if (null === $token) {
             throw new InvalidTokenException('Expected an id_token but did not receive one from the authorization server.');
