@@ -182,6 +182,16 @@ class OpenIDConnectProvider extends GenericProvider
     }
 
     /**
+     * Overload parent as OpenID Connect specification states scopes shall be separated by spaces
+     *
+     * @return string
+     */
+    protected function getScopeSeparator()
+    {
+        return ' ';
+    }
+    
+    /**
      * @return ValidatorChain|void
      */
     public function getValidatorChain()
