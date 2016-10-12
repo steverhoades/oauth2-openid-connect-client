@@ -13,24 +13,24 @@ The following versions of PHP are supported.
 ## Usage
 You may test your OpenID Connect Client against [bshaffer's demo oauth2 server](https://github.com/bshaffer/oauth2-demo-php).
 ```php
-        $signer = new Sha256();
+$signer = new Sha256();
 
-        return new OpenIdConnectProvider([
-                'clientId'                => 'demoapp',   
-                'clientSecret'            => 'demopass',  
-                // Your server
-                'redirectUri'             => 'http://example.com/your-redirect-url/',                
-                'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
-                'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
-                'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',                
-                // Find the public key here: https://github.com/bshaffer/oauth2-demo-php/blob/master/data/pubkey.pem
-                // to test against brentertainment.com
-                'publicKey'                 => 'file:///myproj/data/public.key',
-            ],
-            [
-                'signer' => $signer
-            ]
-        );
+return new OpenIdConnectProvider([
+        'clientId'                => 'demoapp',   
+        'clientSecret'            => 'demopass',  
+        // Your server
+        'redirectUri'             => 'http://example.com/your-redirect-url/',                
+        'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
+        'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
+        'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',                
+        // Find the public key here: https://github.com/bshaffer/oauth2-demo-php/blob/master/data/pubkey.pem
+        // to test against brentertainment.com
+        'publicKey'                 => 'file:///myproj/data/public.key',
+    ],
+    [
+        'signer' => $signer
+    ]
+);
 ```
 
 ### Token Verification
