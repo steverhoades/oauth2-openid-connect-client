@@ -18,6 +18,8 @@ $signer   = new \Lcobucci\JWT\Signer\Rsa\Sha256();
 $provider = new \OpenIDConnectClient\OpenIdConnectProvider([
         'clientId'                => 'demoapp',   
         'clientSecret'            => 'demopass',  
+        // the issuer of the identity token (id_token) this will be compared with what is returned in the token.
+        'idTokenIssuer'           => 'brentertainment.com',
         // Your server
         'redirectUri'             => 'http://example.com/your-redirect-url/',                
         'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',

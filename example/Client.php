@@ -7,8 +7,9 @@ $signer   = new \Lcobucci\JWT\Signer\Rsa\Sha256();
 $provider = new \OpenIDConnectClient\OpenIDConnectProvider([
     'clientId'                => 'demoapp',
     'clientSecret'            => 'demopass',
+    'idTokenIssuer'           => 'brentertainment.com',
     // Your server
-    'redirectUri'             => 'http://localhost:8081/',
+    'redirectUri'             => 'http://localhost:8082/',
     'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
     'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
     'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',
@@ -35,6 +36,13 @@ try {
     ]);
 } catch (\OpenIDConnectClient\InvalidTokenException $e) {
     $errors = $provider->getValidatorChain()->getMessages();
+    echo $e->getMessage();
+    var_dump($errors);
+    return;
+} catch (\Exception $e) {
+    echo $e->getMessage();
+    $errors = $provider->getValidatorChain()->getMessages();
+    var_dump($errors);
     return;
 }
 

@@ -36,6 +36,11 @@ class OpenIDConnectProvider extends GenericProvider
     protected $validatorChain;
 
     /**
+     * @var string
+     */
+    protected $idTokenIssuer;
+
+    /**
      * @param array $options
      * @param array $collaborators
      */
@@ -49,7 +54,7 @@ class OpenIDConnectProvider extends GenericProvider
 
         $this->validatorChain = new ValidatorChain();
         $this->validatorChain->setValidators([
-            new LesserOrEqualsTo('iat', true),
+            new NotEmpty('iat', true),
             new GreaterOrEqualsTo('exp', true),
             new EqualsTo('iss', true),
             new EqualsTo('aud', true),
@@ -58,7 +63,6 @@ class OpenIDConnectProvider extends GenericProvider
             new EqualsTo('jti'),
             new EqualsTo('azp'),
             new EqualsTo('nonce'),
-            new LesserOrEqualsTo('auth_time')
         ]);
 
         if (empty($options['scopes'])) {
@@ -83,6 +87,7 @@ class OpenIDConnectProvider extends GenericProvider
     {
         $options = parent::getRequiredOptions();
         $options[] = 'publicKey';
+        $options[] = 'idTokenIssuer';
 
         return $options;
     }
@@ -104,6 +109,8 @@ class OpenIDConnectProvider extends GenericProvider
         /** @var Token $token */
         $accessToken = parent::getAccessToken($grant, $options);
         $token       = $accessToken->getIdToken();
+
+        var_dump($token->getClaims());
 
         // id_token is empty.
         if (null === $token) {
@@ -143,7 +150,7 @@ class OpenIDConnectProvider extends GenericProvider
         // The meaning and processing of acr Claim Values is out of scope for this specification.
         $currentTime = time();
         $data = [
-            'iss'       => $this->getIssuerFromAuthorizationUrl(),
+            'iss'       => $this->getIdTokenIssuer(),
             'exp'       => $currentTime,
             'auth_time' => $currentTime,
             'iat'       => $currentTime,
@@ -183,19 +190,13 @@ class OpenIDConnectProvider extends GenericProvider
     }
 
     /**
-     * Get the issuer host to validate against the issue of the token.
+     * Get the issuer of the OpenID Connect id_token
      *
      * @return string
      */
-    protected function getIssuerFromAuthorizationUrl()
+    protected function getIdTokenIssuer()
     {
-        $parts = parse_url($this->getBaseAuthorizationUrl());
-
-        $url = isset($parts['scheme']) ? $parts['scheme'] .'://' : 'https://';
-        $url .= $parts['host'];
-        $url .= isset($parts['port']) ? ':'. $parts['port'] : '';
-
-        return $url;
+        $this->idTokenIssuer;
     }
 
 
