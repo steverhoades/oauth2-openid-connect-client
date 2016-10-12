@@ -50,6 +50,6 @@ The MIT License (MIT). Please see [License File](https://github.com/steverhoades
 [PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
 
 ## TODO
-- [] add support for OpenID Connect [Authentication Request Parameters](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)
-- [] add tests
-- [] check implicit and hybrid flow support
+- [ ] add support for OpenID Connect [Authentication Request Parameters](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)
+- [ ] add tests
+- [ ] check implicit and hybrid flow support
