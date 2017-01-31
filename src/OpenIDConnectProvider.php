@@ -194,7 +194,7 @@ class OpenIDConnectProvider extends GenericProvider
      */
     protected function getIdTokenIssuer()
     {
-        $this->idTokenIssuer;
+        return $this->idTokenIssuer;
     }
 
 
