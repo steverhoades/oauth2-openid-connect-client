@@ -15,7 +15,7 @@ You may test your OpenID Connect Client against [bshaffer's demo oauth2 server](
 ```php
 <?php
 $signer   = new \Lcobucci\JWT\Signer\Rsa\Sha256();
-$provider = new \OpenIDConnectClient\OpenIdConnectProvider([
+$provider = new \OpenIDConnectClient\OpenIDConnectProvider([
         'clientId'                => 'demoapp',   
         'clientSecret'            => 'demopass',  
         // the issuer of the identity token (id_token) this will be compared with what is returned in the token.
