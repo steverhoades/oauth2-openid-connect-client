@@ -153,7 +153,7 @@ class OpenIDConnectProvider extends GenericProvider
             'auth_time' => $currentTime,
             'iat'       => $currentTime,
             'nbf'       => $currentTime,
-            'aud'       => $this->clientId
+            'aud'       => [$this->clientId]
         ];
 
         // If the ID Token contains multiple audiences, the Client SHOULD verify that an azp Claim is present.
