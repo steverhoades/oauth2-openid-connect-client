@@ -12,6 +12,7 @@ use League\OAuth2\Client\Provider\GenericProvider;
 use InvalidArgumentException;
 use OpenIDConnectClient\Exception\InvalidTokenException;
 use OpenIDConnectClient\Validator\EqualsTo;
+use OpenIDConnectClient\Validator\EqualsToOrContains;
 use OpenIDConnectClient\Validator\GreaterOrEqualsTo;
 use OpenIDConnectClient\Validator\LesserOrEqualsTo;
 use OpenIDConnectClient\Validator\NotEmpty;
@@ -57,7 +58,7 @@ class OpenIDConnectProvider extends GenericProvider
             new NotEmpty('iat', true),
             new GreaterOrEqualsTo('exp', true),
             new EqualsTo('iss', true),
-            new EqualsTo('aud', true),
+            new EqualsToOrContains('aud', true),
             new NotEmpty('sub', true),
             new LesserOrEqualsTo('nbf'),
             new EqualsTo('jti'),
@@ -153,7 +154,7 @@ class OpenIDConnectProvider extends GenericProvider
             'auth_time' => $currentTime,
             'iat'       => $currentTime,
             'nbf'       => $currentTime,
-            'aud'       => [$this->clientId]
+            'aud'       => $this->clientId
         ];
 
         // If the ID Token contains multiple audiences, the Client SHOULD verify that an azp Claim is present.
