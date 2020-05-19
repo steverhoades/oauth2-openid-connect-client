@@ -144,16 +144,19 @@ class OpenIDConnectProvider extends GenericProvider
         // - If the auth_time Claim was requested, either through a specific request for this Claim or by using
         // the max_age parameter, the Client SHOULD check the auth_time Claim value and request re-authentication if it
         // determines too much time has elapsed since the last End-User authentication.
+        // - The nbf time should be in the future. An option of nbfToleranceSeconds can be sent and it will be added to
+        // the currentTime in order to accept some difference in clocks
         // TODO
         // If the acr Claim was requested, the Client SHOULD check that the asserted Claim Value is appropriate.
         // The meaning and processing of acr Claim Values is out of scope for this specification.
         $currentTime = time();
+        $nbfToleranceSeconds = isset($options['nbfToleranceSeconds'])? intval($options['nbfToleranceSeconds']) : 0;
         $data = [
             'iss'       => $this->getIdTokenIssuer(),
             'exp'       => $currentTime,
             'auth_time' => $currentTime,
             'iat'       => $currentTime,
-            'nbf'       => $currentTime,
+            'nbf'       => $currentTime + $nbfToleranceSeconds,
             'aud'       => $this->clientId
         ];
 
