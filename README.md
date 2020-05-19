@@ -82,6 +82,30 @@ Via Composer
 $ composer require steverhoades/oauth2-openid-connect-client
 ```
 
+## Clock difference tolerance in nbf
+
+Some clock difference can be tolerated between the IdP and the SP by using the `nbfToleranceSeconds` option in the 
+`getAccessToken` method call.
+
+```php
+<?php
+
+...
+// receive authorization response
+try {
+    $token = $provider->getAccessToken('authorization_code', [
+        'code' => $_GET['code'],
+        //adds 60 seconds to currentTime to tolerate 1 minute difference in clocks between IdP and SP
+        'nbfToleranceSeconds' => 60 
+    ]);
+} catch (\OpenIDConnectClient\Exception\InvalidTokenException $e) {
+    $errors = $provider->getValidatorChain()->getMessages();
+    return;
+}
+
+```
+
+
 ## License
 
 The MIT License (MIT). Please see [License File](https://github.com/steverhoades/oauth2-openid-connect-client/blob/master/LICENSE) for more information.
