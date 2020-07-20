@@ -157,14 +157,17 @@ final class OpenIDConnectProvider extends GenericProvider
         // determines too much time has elapsed since the last End-User authentication.
         // - The nbf time should be in the future. An option of nbfToleranceSeconds can be sent and it will be added to
         // the currentTime in order to accept some difference in clocks
+        // - The exp time should be in the past. An option of expToleranceSeconds can be sent and it will be subtracted
+        // from the currentTime in order to accept some difference in clocks
         // TODO
         // If the acr Claim was requested, the Client SHOULD check that the asserted Claim Value is appropriate.
         // The meaning and processing of acr Claim Values is out of scope for this specification.
         $currentTime = time();
         $nbfToleranceSeconds = isset($options['nbfToleranceSeconds']) ? (int)$options['nbfToleranceSeconds'] : 0;
+        $expToleranceSeconds = isset($options['expToleranceSeconds']) ? (int)$options['expToleranceSeconds'] : 0;
         $data = [
             'iss' => $this->getIdTokenIssuer(),
-            'exp' => $currentTime,
+            'exp' => $currentTime - $expToleranceSeconds,
             'auth_time' => $currentTime,
             'iat' => $currentTime,
             'nbf' => $currentTime + $nbfToleranceSeconds,
