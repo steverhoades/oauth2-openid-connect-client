@@ -95,7 +95,16 @@ class OpenIDConnectProvider extends GenericProvider
 
     public function getPublicKey()
     {
-        return new Key($this->publicKey);
+        if (is_array($this->publicKey)) {
+            return array_map(
+                function($key) {
+                    return new Key($key);
+                },
+                $this->publicKey
+            );
+        }
+
+        return [new Key($this->publicKey)];
     }
 
     /**
@@ -124,7 +133,15 @@ class OpenIDConnectProvider extends GenericProvider
         //
         // The alg value SHOULD be the default of RS256 or the algorithm sent by the Client in the
         // id_token_signed_response_alg parameter during Registration.
-        if (false === $token->verify($this->signer, $this->getPublicKey())) {
+        $verified = false;
+        foreach ($this->getPublicKey() as $key) {
+            if (false !== $token->verify($this->signer, $key)) {
+                $verified = true;
+                break;
+            }
+        }
+
+        if (!$verified) {
             throw new InvalidTokenException('Received an invalid id_token from authorization server.');
         }
 
