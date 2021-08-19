@@ -12,6 +12,7 @@
         "php": ">= 7.4",
         "lcobucci/jwt": "^3.4",
         "league/oauth2-client": "^2.0",
+        "codercat/jwk-to-pem": "^1.1",
         "webmozart/assert": "^1.10"
     },
     "require-dev": {
