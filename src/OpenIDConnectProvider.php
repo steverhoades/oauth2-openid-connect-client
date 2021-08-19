@@ -340,7 +340,7 @@ final class OpenIDConnectProvider extends GenericProvider
         }
 
         $jwkConverter = new JWKConverter();
-        $options['publicKey'] = $jwkConverter->toPEM($jwks[0]);
+        $options['publicKey'] = $jwkConverter->multipleToPEM($jwks);
 
         return $options;
     }
