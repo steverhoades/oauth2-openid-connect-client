@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: steverhoades
@@ -6,8 +7,9 @@
  * Time: 12:33 PM
  */
 
-namespace OpenIDConnectClient\Validator;
+declare(strict_types=1);
 
+namespace OpenIDConnectClient\Validator;
 
 class NotEmpty implements ValidatorInterface
 {
@@ -17,7 +19,7 @@ class NotEmpty implements ValidatorInterface
     {
         $valid = !empty($actualValue);
         if (!$valid) {
-            $this->message = sprintf("%s is required and cannot be empty", $this->getName());
+            $this->message = sprintf('%s is required and cannot be empty', $this->getName());
         }
 
         return $valid;

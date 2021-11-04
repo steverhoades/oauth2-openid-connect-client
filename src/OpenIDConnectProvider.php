@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @author Steve Rhoades <sedonami@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
  */
+
 namespace OpenIDConnectClient;
 
 use Lcobucci\JWT\Signer;
@@ -68,12 +70,12 @@ class OpenIDConnectProvider extends GenericProvider
 
         if (empty($options['scopes'])) {
             $options['scopes'] = [];
-        } else if (!is_array($options['scopes'])) {
+        } elseif (!is_array($options['scopes'])) {
             $options['scopes'] = [$options['scopes']];
         }
 
-        if(!in_array('openid', $options['scopes'])) {
-            array_push($options['scopes'], 'openid');
+        if (!in_array('openid', $options['scopes'])) {
+            $options['scopes'][] = 'openid';
         }
 
         parent::__construct($options, $collaborators);
@@ -97,7 +99,7 @@ class OpenIDConnectProvider extends GenericProvider
     {
         if (is_array($this->publicKey)) {
             return array_map(
-                function($key) {
+                function ($key) {
                     return new Key($key);
                 },
                 $this->publicKey
@@ -122,7 +124,8 @@ class OpenIDConnectProvider extends GenericProvider
 
         // id_token is empty.
         if (null === $token) {
-            throw new InvalidTokenException('Expected an id_token but did not receive one from the authorization server.');
+            $message = 'Expected an id_token but did not receive one from the authorization server.';
+            throw new InvalidTokenException($message);
         }
 
         // If the ID Token is received via direct communication between the Client and the Token Endpoint
@@ -142,7 +145,8 @@ class OpenIDConnectProvider extends GenericProvider
         }
 
         if (!$verified) {
-            throw new InvalidTokenException('Received an invalid id_token from authorization server.');
+            $message = 'Received an invalid id_token from authorization server.';
+            throw new InvalidTokenException($message);
         }
 
         // validations
@@ -167,7 +171,7 @@ class OpenIDConnectProvider extends GenericProvider
         // If the acr Claim was requested, the Client SHOULD check that the asserted Claim Value is appropriate.
         // The meaning and processing of acr Claim Values is out of scope for this specification.
         $currentTime = time();
-        $nbfToleranceSeconds = isset($options['nbfToleranceSeconds'])? intval($options['nbfToleranceSeconds']) : 0;
+        $nbfToleranceSeconds = isset($options['nbfToleranceSeconds']) ? intval($options['nbfToleranceSeconds']) : 0;
         $data = [
             'iss'       => $this->getIdTokenIssuer(),
             'exp'       => $currentTime,
@@ -178,7 +182,8 @@ class OpenIDConnectProvider extends GenericProvider
         ];
 
         // If the ID Token contains multiple audiences, the Client SHOULD verify that an azp Claim is present.
-        // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
+        // If an azp (authorized party) Claim is present,
+        // the Client SHOULD verify that its client_id is the Claim Value.
         if ($token->hasClaim('azp')) {
             $data['azp'] = $this->clientId;
         }

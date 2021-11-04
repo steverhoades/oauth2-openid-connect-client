@@ -1,10 +1,13 @@
 <?php
+
 /**
  * @author Steve Rhoades <sedonami@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
  */
-namespace OpenIDConnectClient\Validator;
 
+declare(strict_types=1);
+
+namespace OpenIDConnectClient\Validator;
 
 class GreaterOrEqualsTo implements ValidatorInterface
 {
@@ -16,7 +19,8 @@ class GreaterOrEqualsTo implements ValidatorInterface
             return true;
         }
 
-        $this->message = sprintf("%s is invalid as it is not greater than %s", $actualValue, $expectedValue);
+        $this->message = sprintf('%s is invalid as it is not greater than %s', $actualValue, $expectedValue);
+
         return false;
     }
 }

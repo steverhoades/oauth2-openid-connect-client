@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @author Steve Rhoades <sedonami@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
  */
+
 namespace OpenIDConnectClient\Validator;
 
 use Lcobucci\JWT\Token;
@@ -35,7 +37,6 @@ class ValidatorChain
     }
 
     /**
-     * @param string $claim
      * @param ValidatorInterface $validator
      * @return $this
      */
@@ -55,11 +56,11 @@ class ValidatorChain
     {
         $valid = true;
         foreach ($this->validators as $claim => $validator) {
-            if ($validator->isRequired() && false === $token->hasClaim($claim)) {
+            if ($validator->isRequired() && $token->hasClaim($claim) === false) {
                 $valid = false;
-                $this->messages[$claim] = sprintf("Missing required value for claim %s", $claim);
+                $this->messages[$claim] = sprintf('Missing required value for claim %s', $claim);
                 continue;
-            } else if (empty($data[$claim]) || false === $token->hasClaim($claim)) {
+            } elseif (empty($data[$claim]) || $token->hasClaim($claim) === false) {
                 continue;
             }
 

@@ -1,8 +1,12 @@
 <?php
+
 /**
  * @author Steve Rhoades <sedonami@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
  */
+
+declare(strict_types=1);
+
 namespace OpenIDConnectClient;
 
 use Lcobucci\JWT\Parser;
@@ -25,7 +29,7 @@ class AccessToken extends \League\OAuth2\Client\Token\AccessToken
     {
         return $this->idToken;
     }
-    
+
     public function jsonSerialize()
     {
         $parameters = parent::jsonSerialize();
@@ -34,5 +38,5 @@ class AccessToken extends \League\OAuth2\Client\Token\AccessToken
         }
 
         return $parameters;
-    }    
+    }
 }
