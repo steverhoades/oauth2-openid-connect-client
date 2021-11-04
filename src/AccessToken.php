@@ -1,19 +1,16 @@
 <?php
 
-/**
- * @author Steve Rhoades <sedonami@gmail.com>
- * @license http://opensource.org/licenses/MIT MIT
- */
-
 declare(strict_types=1);
 
 namespace OpenIDConnectClient;
 
-use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Parser;
+use League\OAuth2\Client\Token\AccessToken as LeagueAccessToken;
 
-class AccessToken extends \League\OAuth2\Client\Token\AccessToken
+final class AccessToken extends LeagueAccessToken
 {
-    protected $idToken;
+    private Token $idToken;
 
     public function __construct($options = [])
     {
@@ -25,16 +22,16 @@ class AccessToken extends \League\OAuth2\Client\Token\AccessToken
         }
     }
 
-    public function getIdToken()
+    public function getIdToken(): ?Token
     {
-        return $this->idToken;
+        return $this->idToken ?? null;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $parameters = parent::jsonSerialize();
         if ($this->idToken) {
-            $parameters['id_token'] = (string)$this->idToken;
+            $parameters['id_token'] = $this->idToken->toString();
         }
 
         return $parameters;

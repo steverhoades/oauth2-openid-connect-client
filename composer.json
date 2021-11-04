@@ -9,11 +9,13 @@
         }
     ],
     "require": {
-        "php": ">= 7.0",
-        "lcobucci/jwt": "^4.0",
-        "league/oauth2-client": "^2.0"
+        "php": ">= 7.4",
+        "lcobucci/jwt": "^3.4",
+        "league/oauth2-client": "^2.0",
+        "webmozart/assert": "^1.10"
     },
     "require-dev": {
+        "dg/bypass-finals": "^1.3",
         "enlightn/security-checker": "^1.9",
         "ergebnis/composer-normalize": "^2.15",
         "insolita/unused-scanner": "^2.3",
@@ -26,6 +28,11 @@
     "autoload": {
         "psr-4": {
             "OpenIDConnectClient\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OpenIDConnectClient\\Tests\\": "tests/"
         }
     },
     "scripts": {

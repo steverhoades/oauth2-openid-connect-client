@@ -1,20 +1,24 @@
 <?php
 
-/**
- * @author Steve Rhoades <sedonami@gmail.com>
- * @license http://opensource.org/licenses/MIT MIT
- */
-
 declare(strict_types=1);
 
 namespace OpenIDConnectClient\Validator;
 
-class EqualsTo implements ValidatorInterface
+use Webmozart\Assert\Assert;
+
+final class EqualsTo implements ValidatorInterface
 {
     use ValidatorTrait;
 
-    public function isValid($expectedValue, $actualValue)
+    /**
+     * @param mixed $expectedValue
+     * @param mixed $actualValue
+     */
+    public function isValid($expectedValue, $actualValue): bool
     {
+        Assert::nullOrScalar($expectedValue);
+        Assert::nullOrScalar($actualValue);
+
         if ($expectedValue === $actualValue) {
             return true;
         }

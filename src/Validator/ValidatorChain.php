@@ -1,32 +1,28 @@
 <?php
 
-/**
- * @author Steve Rhoades <sedonami@gmail.com>
- * @license http://opensource.org/licenses/MIT MIT
- */
+declare(strict_types=1);
 
 namespace OpenIDConnectClient\Validator;
 
 use Lcobucci\JWT\Token;
+use OpenIDConnectClient\Exception\UnknownValidatorRequestedException;
+use Webmozart\Assert\Assert;
 
-class ValidatorChain
+final class ValidatorChain
 {
-    /**
-     * @var array
-     */
-    protected $validators = [];
+    /** @var ValidatorInterface[] */
+    private array $validators = [];
 
-    /**
-     * @var array
-     */
-    protected $messages = [];
+    /** @var string[] */
+    private array $messages = [];
 
     /**
      * @param ValidatorInterface[] $validators
-     * @return $this
      */
-    public function setValidators(array $validators)
+    public function setValidators(array $validators): self
     {
+        Assert::allIsInstanceOf($validators, ValidatorInterface::class);
+
         $this->validators = [];
 
         foreach ($validators as $validator) {
@@ -36,23 +32,14 @@ class ValidatorChain
         return $this;
     }
 
-    /**
-     * @param ValidatorInterface $validator
-     * @return $this
-     */
-    public function addValidator(ValidatorInterface $validator)
+    public function addValidator(ValidatorInterface $validator): self
     {
         $this->validators[$validator->getName()] = $validator;
 
         return $this;
     }
 
-    /**
-     * @param array $data
-     * @param Token $token
-     * @return bool
-     */
-    public function validate(array $data, Token $token)
+    public function validate(array $data, Token $token): bool
     {
         $valid = true;
         foreach ($this->validators as $claim => $validator) {
@@ -73,28 +60,28 @@ class ValidatorChain
         return $valid;
     }
 
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function hasValidator($name)
+    public function hasValidator(string $name): bool
     {
-        return array_key_exists($name, $this->validators);
+        Assert::notEmpty(trim($name));
+
+        return isset($this->validators[$name]);
     }
 
-    /**
-     * @param $name
-     * @return mixed
-     */
-    public function getValidator($name)
+    public function getValidator(string $name): ValidatorInterface
     {
-        return $this->validators[$name];
+        Assert::notEmpty(trim($name));
+
+        $validator = $this->validators[$name] ?? null;
+
+        if (!$validator) {
+            $message = sprintf('Validator with name "%s" is not registered', $name);
+            throw new UnknownValidatorRequestedException($message);
+        }
+
+        return $validator;
     }
 
-    /**
-     * @return array
-     */
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->messages;
     }

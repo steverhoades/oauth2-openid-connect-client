@@ -6,9 +6,8 @@ This package uses the PHP League's [OAuth2 Client](https://github.com/thephpleag
 
 The following versions of PHP are supported.
 
-* PHP 5.5
-* PHP 5.6
-* PHP 7.0
+* PHP 7.4
+* PHP 8.0
 
 ## Usage
 You may test your OpenID Connect Client against [bshaffer's demo oauth2 server](https://github.com/bshaffer/oauth2-demo-php).
@@ -16,15 +15,15 @@ You may test your OpenID Connect Client against [bshaffer's demo oauth2 server](
 <?php
 $signer   = new \Lcobucci\JWT\Signer\Rsa\Sha256();
 $provider = new \OpenIDConnectClient\OpenIDConnectProvider([
-        'clientId'                => 'demoapp',   
-        'clientSecret'            => 'demopass',  
+        'clientId'                => 'demoapp',
+        'clientSecret'            => 'demopass',
         // the issuer of the identity token (id_token) this will be compared with what is returned in the token.
         'idTokenIssuer'           => 'brentertainment.com',
         // Your server
-        'redirectUri'             => 'http://example.com/your-redirect-url/',                
+        'redirectUri'             => 'http://example.com/your-redirect-url/',
         'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
         'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
-        'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',                
+        'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',
         // Find the public key here: https://github.com/bshaffer/oauth2-demo-php/blob/master/data/pubkey.pem
         // to test against brentertainment.com
         'publicKey'                 => 'file:///myproj/data/public.key',
@@ -37,7 +36,7 @@ $provider = new \OpenIDConnectClient\OpenIDConnectProvider([
 // send the authorization request
 if (empty($_GET['code'])) {
     $redirectUrl = $provider->getAuthorizationUrl();
-    header(sprintf('Location: %s', $redirectUrl), true, 302); 
+    header(sprintf('Location: %s', $redirectUrl), true, 302);
     return;
 }
 
@@ -84,7 +83,7 @@ $ composer require steverhoades/oauth2-openid-connect-client
 
 ## Clock difference tolerance in nbf
 
-Some clock difference can be tolerated between the IdP and the SP by using the `nbfToleranceSeconds` option in the 
+Some clock difference can be tolerated between the IdP and the SP by using the `nbfToleranceSeconds` option in the
 `getAccessToken` method call.
 
 ```php
@@ -96,7 +95,7 @@ try {
     $token = $provider->getAccessToken('authorization_code', [
         'code' => $_GET['code'],
         //adds 60 seconds to currentTime to tolerate 1 minute difference in clocks between IdP and SP
-        'nbfToleranceSeconds' => 60 
+        'nbfToleranceSeconds' => 60
     ]);
 } catch (\OpenIDConnectClient\Exception\InvalidTokenException $e) {
     $errors = $provider->getValidatorChain()->getMessages();
