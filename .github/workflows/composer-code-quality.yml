@@ -1,0 +1,17 @@
+name: "Composer.json quality"
+
+on: push
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run composer normalize
+          run: composer normalize --dry-run

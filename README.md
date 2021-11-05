@@ -55,8 +55,8 @@ $refreshToken   = $token->getRefreshToken();
 $expires        = $token->getExpires();
 $hasExpired     = $token->hasExpired();
 $idToken        = $token->getIdToken();
-$email          = $idToken->getClaim('email', false);
-$allClaims      = $idToken->getClaims();
+$email          = $idToken->claims()->get('email', false);
+$allClaims      = $idToken->claims();
 
 ```
 
@@ -115,6 +115,6 @@ The MIT License (MIT). Please see [License File](https://github.com/steverhoades
 
 ## TODO
 - [ ] add support for OpenID Connect [Authentication Request Parameters](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)
-- [ ] add tests
+- [x] add tests
 - [ ] check implicit and hybrid flow support
 - [x] example endpoints showing usage

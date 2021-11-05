@@ -1,0 +1,32 @@
+name: "PHP code quality"
+
+on: push
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run php linter
+          run: composer lint
+
+      - name: Run php unit test
+          run: composer unit
+
+      - name: Run php code style checker
+          run: composer style
+
+      - name: Run php require-checker
+          run: composer require-checker
+
+      - name: Run php unused-scanner
+          run: composer unused-scanner
+
+      - name: Run php security-checker
+          run: composer security-checker
