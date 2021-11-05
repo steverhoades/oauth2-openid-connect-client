@@ -310,6 +310,8 @@ final class OpenIDConnectProviderTest extends TestCase
 
     public function invalidConstructorArgumentsProvider(): iterable
     {
+        $signer = $this->createMock(Signer::class);
+
         yield 'signer is missing' => [
             [
                 'urlAuthorize' => 'url-auth',
@@ -345,7 +347,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => new stdClass(),
+                'signer' => $signer,
             ],
         ];
 
@@ -358,7 +360,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => new stdClass(),
+                'signer' => $signer,
             ],
         ];
 
@@ -371,7 +373,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => new stdClass(),
+                'signer' => $signer,
             ],
         ];
 
@@ -384,7 +386,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => new stdClass(),
+                'signer' => $signer,
             ],
         ];
 
@@ -397,7 +399,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 //'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => new stdClass(),
+                'signer' => $signer,
             ],
         ];
     }
