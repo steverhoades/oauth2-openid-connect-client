@@ -1,20 +1,29 @@
-name: "Composer.json quality"
+name: Composer.json quality
 
 on: push
 
 jobs:
-  tests:
+  composer_validate:
+    strategy:
+      fail-fast: false
+      matrix:
+        php_version: [ '7.4' ]
+
     runs-on: ubuntu-latest
 
-    name: Test composer validity
+    name: Test composer validity with ${{ matrix.php_version }}
 
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: Install dependencies
-        run: composer install
+      # see https://github.com/shivammathur/setup-php
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+
+      - uses: "ramsey/composer-install@v1"
 
       - name: Run composer normalize
         run: composer normalize --dry-run
