@@ -3,8 +3,15 @@ name: "PHP code quality"
 on: push
 
 jobs:
-  phpcs:
+  tests:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php_version: [ '7.4', '8' ]
+
+    name: Test php ${{ matrix.php_version }}
+
     steps:
       - uses: actions/checkout@v2
         with:

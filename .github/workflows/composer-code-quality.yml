@@ -3,8 +3,11 @@ name: "Composer.json quality"
 on: push
 
 jobs:
-  phpcs:
+  tests:
     runs-on: ubuntu-latest
+
+    name: Test composer validity
+
     steps:
       - uses: actions/checkout@v2
         with:
