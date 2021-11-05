@@ -57,7 +57,7 @@ $response = [
     'Refresh Token: ' . $token->getRefreshToken(),
     'Expires: ' . $token->getExpires(),
     'Has Expired: ' . $token->hasExpired(),
-    'All Claims: ' . print_r($token->getIdToken()->getClaims(), true),
+    'All Claims: ' . print_r($token->getIdToken()->claims(), true),
 ];
 
 echo implode('<br />', $response);

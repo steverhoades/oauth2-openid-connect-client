@@ -162,7 +162,7 @@ final class OpenIDConnectProviderTest extends TestCase
     public function testGetAccessToken(): void
     {
         $grant = $this->createMock(AbstractGrant::class);
-        $options = ['code' => 'some-code'];
+        $options = ['required-parameter' => 'some-value'];
 
         // AbstractProvider::verifyGrant
         $this->mockParentClassForAccessToken($grant, $options);
@@ -214,7 +214,7 @@ final class OpenIDConnectProviderTest extends TestCase
     public function testGetAccessTokenThrowsExceptionForInvalidKey(): void
     {
         $grant = $this->createMock(AbstractGrant::class);
-        $options = ['code' => 'some-code'];
+        $options = ['required-parameter' => 'some-value'];
 
         // AbstractProvider::verifyGrant
         $this->mockParentClassForAccessToken($grant, $options);
@@ -245,7 +245,7 @@ final class OpenIDConnectProviderTest extends TestCase
     public function testGetAccessTokenThrowsExceptionForInvalidChain(): void
     {
         $grant = $this->createMock(AbstractGrant::class);
-        $options = ['code' => 'some-code'];
+        $options = ['required-parameter' => 'some-value'];
 
         // AbstractProvider::verifyGrant
         $this->mockParentClassForAccessToken($grant, $options);

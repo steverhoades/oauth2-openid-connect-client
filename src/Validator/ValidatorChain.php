@@ -42,16 +42,20 @@ final class ValidatorChain
     public function validate(array $data, Token $token): bool
     {
         $valid = true;
+        $claims = $token->claims();
+
         foreach ($this->validators as $claim => $validator) {
-            if ($validator->isRequired() && $token->hasClaim($claim) === false) {
+            if ($validator->isRequired() && !$claims->has($claim)) {
                 $valid = false;
                 $this->messages[$claim] = sprintf('Missing required value for claim %s', $claim);
                 continue;
-            } elseif (empty($data[$claim]) || $token->hasClaim($claim) === false) {
+            }
+
+            if (!isset($data[$claim]) || !$data[$claim] || !$claims->has($claim)) {
                 continue;
             }
 
-            if (!$validator->isValid($data[$claim], $token->getClaim($claim))) {
+            if (!$validator->isValid($data[$claim], $claims->get($claim))) {
                 $valid = false;
                 $this->messages[$claim] = $validator->getMessage();
             }

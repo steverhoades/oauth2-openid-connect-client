@@ -6,6 +6,7 @@ namespace OpenIDConnectClient\Tests\Unit\Validator;
 
 use InvalidArgumentException;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\DataSet;
 use OpenIDConnectClient\Validator\ValidatorChain;
 use OpenIDConnectClient\Validator\ValidatorInterface;
 use PHPUnit\Framework\TestCase;
@@ -128,9 +129,15 @@ final class ValidatorChainTest extends TestCase
         $this->chain->addValidator($secondValidator);
 
         $token = $this->createMock(Token::class);
+        $claims = $this->createMock(DataSet::class);
         $token
+            ->expects(self::once())
+            ->method('claims')
+            ->willReturn($claims);
+
+        $claims
             ->expects(self::exactly(3))
-            ->method('hasClaim')
+            ->method('has')
             ->willReturnMap(
                 [
                     ['v1', true],
@@ -138,9 +145,9 @@ final class ValidatorChainTest extends TestCase
                 ],
             );
 
-        $token
+        $claims
             ->expects(self::exactly(2))
-            ->method('getClaim')
+            ->method('get')
             ->willReturnMap(
                 [
                     ['v1', null, 'some value 1'],
@@ -224,9 +231,15 @@ final class ValidatorChainTest extends TestCase
         $this->chain->addValidator($fourthValidator);
 
         $token = $this->createMock(Token::class);
+        $claims = $this->createMock(DataSet::class);
         $token
+            ->expects(self::once())
+            ->method('claims')
+            ->willReturn($claims);
+
+        $claims
             ->expects(self::exactly(3))
-            ->method('hasClaim')
+            ->method('has')
             ->willReturnMap(
                 [
                     ['v1', false],
@@ -235,9 +248,9 @@ final class ValidatorChainTest extends TestCase
                 ],
             );
 
-        $token
+        $claims
             ->expects(self::once())
-            ->method('getClaim')
+            ->method('get')
             ->willReturnMap(
                 [
                     ['v2', null, 'some value 2'],
