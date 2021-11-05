@@ -35,7 +35,10 @@ final class OpenIDConnectProvider extends GenericProvider
 
         $this->signer = $collaborators['signer'];
 
-        $this->validatorChain = new ValidatorChain();
+        if (!isset($collaborators['validatorChain'])) {
+            $collaborators['validatorChain'] = new ValidatorChain();
+        }
+        $this->validatorChain = $collaborators['validatorChain'];
         $this->validatorChain->setValidators(
             [
                 new NotEmpty('iat', true),
