@@ -21,8 +21,8 @@ final class OpenIDConnectProvider extends GenericProvider
     private Signer $signer;
 
     /** @var string|array<string> */
-    private $publicKey;
-    private string $idTokenIssuer;
+    protected $publicKey;
+    protected string $idTokenIssuer;
 
     /**
      * @param array $options
@@ -77,7 +77,10 @@ final class OpenIDConnectProvider extends GenericProvider
         return $options;
     }
 
-    public function getPublicKey()
+    /**
+     * @return Key[]
+     */
+    public function getPublicKey(): array
     {
         if (is_array($this->publicKey)) {
             return array_map(
@@ -136,13 +139,14 @@ final class OpenIDConnectProvider extends GenericProvider
         // - The Issuer Identifier for the OpenID Provider (which is typically obtained during Discovery)
         // MUST exactly match the value of the iss (issuer) Claim.
         // validate the aud
-        // - The Client MUST validate that the aud (audience) Claim contains its client_id value registered at the Issuer
+        // - The Client MUST validate that the aud/audience Claim contains its client_id value registered at the Issuer
         // identified by the iss (issuer) Claim as an audience. The aud (audience) Claim MAY contain an array with more
         // than one element. The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,
         // or if it contains additional audiences not trusted by the Client.
-        // - If a nonce value was sent in the Authentication Request, a nonce Claim MUST be present and its value checked
-        // to verify that it is the same value as the one that was sent in the Authentication Request. The Client SHOULD
-        // check the nonce value for replay attacks. The precise method for detecting replay attacks is Client specific.
+        // - If a nonce value was sent in the Authentication Request, a nonce Claim MUST be present and its value
+        // checked to verify that it is the same value as the one that was sent in the Authentication Request.
+        // The Client SHOULD check the nonce value for replay attacks.
+        // The precise method for detecting replay attacks is Client specific.
         // - If the auth_time Claim was requested, either through a specific request for this Claim or by using
         // the max_age parameter, the Client SHOULD check the auth_time Claim value and request re-authentication if it
         // determines too much time has elapsed since the last End-User authentication.

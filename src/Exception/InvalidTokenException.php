@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace OpenIDConnectClient\Exception;
 
-final class InvalidTokenException extends \Exception
-{
+use RuntimeException;
 
+final class InvalidTokenException extends RuntimeException
+{
 }

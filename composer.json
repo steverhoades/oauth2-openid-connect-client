@@ -36,11 +36,22 @@
         }
     },
     "scripts": {
+        "check-all": [
+            "composer diagnose",
+            "composer check-platform-reqs",
+            "composer normalize --dry-run",
+            "composer lint",
+            "composer unit",
+            "composer style",
+            "composer require-checker",
+            "composer unused-scanner",
+            "composer security-checker"
+        ],
         "fix-style": "vendor/bin/phpcbf --standard=PSR12 src/",
         "lint": "vendor/bin/parallel-lint --exclude vendor --exclude packages . --colors",
         "require-checker": "vendor/bin/composer-require-checker check --config-file=ci/composer-require-checker.json",
         "security-checker": "vendor/bin/security-checker security:check composer.lock",
-        "style": "vendor/bin/phpcs --standard=PSR12 src/",
+        "style": "vendor/bin/phpcs --standard=PSR12 src/ tests/",
         "unit": "vendor/bin/phpunit --configuration phpunit.xml --colors=never --coverage-cobertura=cobertura-coverage.xml --coverage-text --testdox",
         "unused-scanner": "vendor/bin/unused_scanner ci/unused_scanner.php"
     }

@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace OpenIDConnectClient;
 
+use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Token;
-use Lcobucci\JWT\Token\Parser;
 use League\OAuth2\Client\Token\AccessToken as LeagueAccessToken;
 
 final class AccessToken extends LeagueAccessToken
 {
     private Token $idToken;
 
-    public function __construct($options = [])
+    public function __construct(array $options = [])
     {
         parent::__construct($options);
 
-        if (!empty($this->values['id_token'])) {
+        if (isset($this->values['id_token'])) {
             $this->idToken = (new Parser())->parse($this->values['id_token']);
             unset($this->values['id_token']);
         }
@@ -30,7 +30,7 @@ final class AccessToken extends LeagueAccessToken
     public function jsonSerialize(): array
     {
         $parameters = parent::jsonSerialize();
-        if ($this->idToken) {
+        if (isset($this->idToken)) {
             $parameters['id_token'] = $this->idToken->toString();
         }
 
