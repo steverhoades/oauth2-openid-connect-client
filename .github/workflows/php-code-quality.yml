@@ -14,19 +14,19 @@ jobs:
         run: composer install
 
       - name: Run php linter
-          run: composer lint
+        run: composer lint
 
       - name: Run php unit test
-          run: composer unit
+        run: composer unit
 
       - name: Run php code style checker
-          run: composer style
+        run: composer style
 
       - name: Run php require-checker
-          run: composer require-checker
+        run: composer require-checker
 
       - name: Run php unused-scanner
-          run: composer unused-scanner
+        run: composer unused-scanner
 
       - name: Run php security-checker
-          run: composer security-checker
+        run: composer security-checker

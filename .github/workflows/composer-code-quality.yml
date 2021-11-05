@@ -14,4 +14,4 @@ jobs:
         run: composer install
 
       - name: Run composer normalize
-          run: composer normalize --dry-run
+        run: composer normalize --dry-run
