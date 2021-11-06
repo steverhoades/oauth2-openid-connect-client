@@ -1,6 +1,6 @@
 name: Composer.json quality
 
-on: push
+on: [push, pull_request]
 
 jobs:
   composer_validate:
