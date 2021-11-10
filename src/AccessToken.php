@@ -1,38 +1,39 @@
 <?php
-/**
- * @author Steve Rhoades <sedonami@gmail.com>
- * @license http://opensource.org/licenses/MIT MIT
- */
+
+declare(strict_types=1);
+
 namespace OpenIDConnectClient;
 
 use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Token;
+use League\OAuth2\Client\Token\AccessToken as LeagueAccessToken;
 
-class AccessToken extends \League\OAuth2\Client\Token\AccessToken
+final class AccessToken extends LeagueAccessToken
 {
-    protected $idToken;
+    private Token $idToken;
 
-    public function __construct($options = [])
+    public function __construct(array $options = [])
     {
         parent::__construct($options);
 
-        if (!empty($this->values['id_token'])) {
+        if (isset($this->values['id_token'])) {
             $this->idToken = (new Parser())->parse($this->values['id_token']);
             unset($this->values['id_token']);
         }
     }
 
-    public function getIdToken()
+    public function getIdToken(): ?Token
     {
-        return $this->idToken;
+        return $this->idToken ?? null;
     }
-    
-    public function jsonSerialize()
+
+    public function jsonSerialize(): array
     {
         $parameters = parent::jsonSerialize();
-        if ($this->idToken) {
-            $parameters['id_token'] = (string)$this->idToken;
+        if (isset($this->idToken)) {
+            $parameters['id_token'] = $this->idToken->toString();
         }
 
         return $parameters;
-    }    
+    }
 }

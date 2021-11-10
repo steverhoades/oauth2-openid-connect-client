@@ -9,18 +9,50 @@
         }
     ],
     "require": {
+        "php": ">= 7.4",
+        "lcobucci/jwt": "^3.4",
         "league/oauth2-client": "^2.0",
-        "lcobucci/jwt": "^3.2"
+        "webmozart/assert": "^1.10"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.5",
-        "squizlabs/php_codesniffer": "~2.3",
-        "phpmd/phpmd": "~2.2",
-        "phpunit/php-invoker": "~1.1"
+        "dg/bypass-finals": "^1.3",
+        "enlightn/security-checker": "^1.9",
+        "ergebnis/composer-normalize": "^2.15",
+        "insolita/unused-scanner": "^2.3",
+        "maglnet/composer-require-checker": "^3.3",
+        "php-parallel-lint/php-parallel-lint": "^1.3",
+        "phpunit/phpunit": "^9.5",
+        "roave/security-advisories": "dev-master",
+        "squizlabs/php_codesniffer": "^3.6"
     },
     "autoload": {
         "psr-4": {
             "OpenIDConnectClient\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OpenIDConnectClient\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "check-all": [
+            "composer diagnose",
+            "composer check-platform-reqs",
+            "composer normalize --dry-run",
+            "composer lint",
+            "composer unit",
+            "composer style",
+            "composer require-checker",
+            "composer unused-scanner",
+            "composer security-checker"
+        ],
+        "fix-style": "vendor/bin/phpcbf --standard=PSR12 src/",
+        "lint": "vendor/bin/parallel-lint --exclude vendor --exclude packages . --colors",
+        "require-checker": "vendor/bin/composer-require-checker check --config-file=ci/composer-require-checker.json",
+        "security-checker": "vendor/bin/security-checker security:check composer.lock",
+        "style": "vendor/bin/phpcs --standard=PSR12 src/ tests/",
+        "unit": "vendor/bin/phpunit --configuration phpunit.xml --colors=never --coverage-cobertura=cobertura-coverage.xml --coverage-text --testdox",
+        "unused-scanner": "vendor/bin/unused_scanner ci/unused_scanner.php"
     }
 }

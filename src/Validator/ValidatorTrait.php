@@ -1,37 +1,39 @@
 <?php
-/**
- * @author Steve Rhoades <sedonami@gmail.com>
- * @license http://opensource.org/licenses/MIT MIT
- */
+
+declare(strict_types=1);
+
 namespace OpenIDConnectClient\Validator;
 
+use Webmozart\Assert\Assert;
 
+/**
+ * @implements ValidatorInterface
+ */
 trait ValidatorTrait
 {
+    private string $name;
+    private ?string $message = null;
+    private bool $required;
 
-    protected $name;
-
-    protected $message;
-
-    protected $required;
-
-    public function __construct($name, $required = false)
+    public function __construct(string $name, bool $required = false)
     {
-        $this->name     = $name;
+        Assert::notEmpty(trim($name));
+
+        $this->name = $name;
         $this->required = $required;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getMessage()
+    public function getMessage(): ?string
     {
         return $this->message;
     }
 
-    public function isRequired()
+    public function isRequired(): bool
     {
         return $this->required;
     }

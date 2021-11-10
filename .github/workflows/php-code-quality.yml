@@ -1,0 +1,46 @@
+name: PHP code analysis
+
+on: [push, pull_request]
+
+jobs:
+  code_analysis:
+    strategy:
+      fail-fast: false
+      matrix:
+        php_version: [ '7.4' ]
+        actions:
+          - name: Run php linter
+            run: composer lint
+
+          - name: Run php unit test
+            run: composer unit
+
+          - name: Run php code style checker
+            run: composer style
+
+          - name: Run php require-checker
+            run: composer require-checker
+
+          - name: Run php unused-scanner
+            run: composer unused-scanner
+
+          - name: Run php security-checker
+            run: composer security-checker
+
+    runs-on: ubuntu-latest
+    name: ${{ matrix.actions.name }} on ${{ matrix.php_version }}
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # see https://github.com/shivammathur/setup-php
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+
+      - uses: "ramsey/composer-install@v1"
+
+      - run: ${{ matrix.actions.run }}

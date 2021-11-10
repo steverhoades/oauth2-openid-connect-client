@@ -6,6 +6,6 @@ namespace OpenIDConnectClient\Exception;
 
 use RuntimeException;
 
-final class InvalidTokenException extends RuntimeException
+final class UnknownValidatorRequestedException extends RuntimeException
 {
 }
