@@ -7,6 +7,7 @@ namespace OpenIDConnectClient\Tests\Unit\Validator;
 use InvalidArgumentException;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\DataSet;
+use Lcobucci\JWT\Token\Plain;
 use OpenIDConnectClient\Validator\ValidatorChain;
 use OpenIDConnectClient\Validator\ValidatorInterface;
 use PHPUnit\Framework\TestCase;
@@ -128,7 +129,7 @@ final class ValidatorChainTest extends TestCase
         $this->chain->addValidator($firstValidator);
         $this->chain->addValidator($secondValidator);
 
-        $token = $this->createMock(Token::class);
+        $token = $this->createMock(Plain::class);
         $claims = $this->createMock(DataSet::class);
         $token
             ->expects(self::once())
@@ -230,7 +231,7 @@ final class ValidatorChainTest extends TestCase
         $this->chain->addValidator($thirdValidator);
         $this->chain->addValidator($fourthValidator);
 
-        $token = $this->createMock(Token::class);
+        $token = $this->createMock(Plain::class);
         $claims = $this->createMock(DataSet::class);
         $token
             ->expects(self::once())
