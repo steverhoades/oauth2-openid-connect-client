@@ -55,7 +55,14 @@ final class ValidatorChain
                 continue;
             }
 
-            if (!$validator->isValid($data[$claim], $claims->get($claim))) {
+            // All timestamps will be converted to DateTimeImmutable
+            // Convert them back to unix timestamp here so we can compare as numbers
+            $claimValue = $claims->get($claim);
+            if ($claimValue instanceof \DateTimeInterface) {
+                $claimValue = $claimValue->getTimestamp();
+            }
+
+            if (!$validator->isValid($data[$claim], $claimValue)) {
                 $valid = false;
                 $this->messages[$claim] = $validator->getMessage();
             }
