@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace OpenIDConnectClient;
 
+use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use League\OAuth2\Client\Grant\AbstractGrant;
 use League\OAuth2\Client\Provider\GenericProvider;
 use OpenIDConnectClient\Exception\InvalidTokenException;
@@ -88,15 +92,25 @@ final class OpenIDConnectProvider extends GenericProvider
     public function getPublicKey(): array
     {
         if (is_array($this->publicKey)) {
+            $self = $this;
             return array_map(
-                static function (string $key): Key {
-                    return new Key($key);
+                static function (string $key) use ($self): Key {
+                    return $self->constructKey($key);
                 },
                 $this->publicKey,
             );
         }
 
-        return [new Key($this->publicKey)];
+        return [$this->constructKey($this->publicKey)];
+    }
+
+    private function constructKey(string $content): Key
+    {
+        if (strpos($content, 'file://') === 0) {
+            return InMemory::file($content);
+        }
+
+        return InMemory::plainText($content);
     }
 
     /**
@@ -127,7 +141,7 @@ final class OpenIDConnectProvider extends GenericProvider
         // id_token_signed_response_alg parameter during Registration.
         $verified = false;
         foreach ($this->getPublicKey() as $key) {
-            if ($token->verify($this->signer, $key) !== false) {
+            if ($this->validateSignature($token, $key) !== false) {
                 $verified = true;
                 break;
             }
@@ -174,7 +188,7 @@ final class OpenIDConnectProvider extends GenericProvider
         // If the ID Token contains multiple audiences, the Client SHOULD verify that an azp Claim is present.
         // If an azp (authorized party) Claim is present,
         // the Client SHOULD verify that its client_id is the Claim Value.
-        if ($token->hasClaim('azp')) {
+        if ($token->claims()->has('azp')) {
             $data['azp'] = $this->clientId;
         }
 
@@ -183,6 +197,15 @@ final class OpenIDConnectProvider extends GenericProvider
         }
 
         return $accessToken;
+    }
+
+    protected function validateSignature(Token $token, Key $key): bool
+    {
+        $validatorConfig = Configuration::forAsymmetricSigner($this->signer, $key, $key);
+        $validatorConfig->setValidationConstraints(new SignedWith($this->signer, $key));
+        $validator = $validatorConfig->validator();
+
+        return $validator->validate($token, ...$validatorConfig->validationConstraints());
     }
 
     /**
