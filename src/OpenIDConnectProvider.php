@@ -123,6 +123,10 @@ final class OpenIDConnectProvider extends GenericProvider
     public function getAccessToken($grant, array $options = [])
     {
         $accessToken = parent::getAccessToken($grant, $options);
+        if (!$accessToken instanceof AccessToken) {
+            throw new InvalidTokenException('Received wrong access token type');
+        }
+
         $token = $accessToken->getIdToken();
 
         // id_token is empty.

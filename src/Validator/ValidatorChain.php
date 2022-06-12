@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenIDConnectClient\Validator;
 
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Plain;
 use OpenIDConnectClient\Exception\UnknownValidatorRequestedException;
 use Webmozart\Assert\Assert;
 
@@ -39,7 +39,7 @@ final class ValidatorChain
         return $this;
     }
 
-    public function validate(array $data, Token $token): bool
+    public function validate(array $data, Plain $token): bool
     {
         $valid = true;
         $claims = $token->claims();
