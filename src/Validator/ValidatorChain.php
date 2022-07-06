@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OpenIDConnectClient\Validator;
 
-use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Plain;
 use OpenIDConnectClient\Exception\UnknownValidatorRequestedException;
 use Webmozart\Assert\Assert;
 
@@ -39,7 +39,7 @@ final class ValidatorChain
         return $this;
     }
 
-    public function validate(array $data, Token $token): bool
+    public function validate(array $data, Plain $token): bool
     {
         $valid = true;
         $claims = $token->claims();
@@ -55,7 +55,14 @@ final class ValidatorChain
                 continue;
             }
 
-            if (!$validator->isValid($data[$claim], $claims->get($claim))) {
+            // All timestamps will be converted to DateTimeImmutable
+            // Convert them back to unix timestamp here so we can compare as numbers
+            $claimValue = $claims->get($claim);
+            if ($claimValue instanceof \DateTimeInterface) {
+                $claimValue = $claimValue->getTimestamp();
+            }
+
+            if (!$validator->isValid($data[$claim], $claimValue)) {
                 $valid = false;
                 $this->messages[$claim] = $validator->getMessage();
             }
