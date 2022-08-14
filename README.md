@@ -31,7 +31,9 @@ $provider = new \OpenIDConnectClient\OpenIDConnectProvider([
         'publicKey'               => 'file:///myproj/data/public.key',
         
         // Alternatively, you can use automatic discovery as long as your server
-        // has the <issuer>/.well-known/openid-configuration endpoint
+        // has the <issuer>/.well-known/openid-configuration endpoint.
+        // This endpoint will then provide all provider settings above, so you only need to provide
+        // your own clientId, clientSecret, and redirectUri.
         'issuer'                  => 'http://example.com/oauth2'
     ],
     [
