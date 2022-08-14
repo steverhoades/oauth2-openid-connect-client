@@ -81,7 +81,7 @@ final class OpenIDConnectProvider extends GenericProvider
         }
 
         // Using discovery
-        if(isset($options['issuer'])) {
+        if (isset($options['issuer'])) {
             $options = $this->discoverConfiguration($options["issuer"], $options);
         }
 
@@ -283,23 +283,25 @@ final class OpenIDConnectProvider extends GenericProvider
             ],
         ];
 
-        foreach($optionMapping as $optionKey => $responseKey) {
-            if(!isset($response[$responseKey['name']])) {
-                if($responseKey['required']) {
+        foreach ($optionMapping as $optionKey => $responseKey) {
+            if (!isset($response[$responseKey['name']])) {
+                if ($responseKey['required']) {
                     throw new InvalidConfigurationException(
                         "Required parameter {$responseKey['name']} missing in discovery configuration at $uri"
                     );
-                } else continue;
+                } else {
+                    continue;
+                }
             }
 
             $options[$optionKey] = $response[$responseKey['name']];
         }
 
         // Validate scopes
-        if(isset($response["scopes_supported"])) {
+        if (isset($response["scopes_supported"])) {
             $scopesSupported = $response["scopes_supported"];
-            foreach($options['scopes'] as $scope) {
-                if(!in_array($scope, $scopesSupported)) {
+            foreach ($options['scopes'] as $scope) {
+                if (!in_array($scope, $scopesSupported)) {
                     throw new InvalidConfigurationException(
                         "Scope $scope is not supported in discovery configuration at $uri"
                     );
@@ -308,7 +310,7 @@ final class OpenIDConnectProvider extends GenericProvider
         }
 
         // Set public key
-        if(!isset($response["jwks_uri"])) {
+        if (!isset($response["jwks_uri"])) {
             throw new InvalidConfigurationException(
                 "Required parameter jwks_uri missing in discovery configuration at $uri"
             );
@@ -324,15 +326,21 @@ final class OpenIDConnectProvider extends GenericProvider
         }
 
         // We will only need signature keys supported by our signer
-        $jwks = array_filter($jwksResponse['keys'], function($jwk) {
-            if(!is_array($jwk)) return false;
-            if(isset($jwk['use']) && $jwk['use'] !== 'sig') return false;
-            if($jwk['alg'] !== $this->signer->getAlgorithmId()) return false;
+        $jwks = array_filter($jwksResponse['keys'], function ($jwk) {
+            if (!is_array($jwk)) {
+                return false;
+            }
+            if (isset($jwk['use']) && $jwk['use'] !== 'sig') {
+                return false;
+            }
+            if ($jwk['alg'] !== $this->signer->getAlgorithmId()) {
+                return false;
+            }
 
             return true;
         });
 
-        if(count($jwks) === 0) {
+        if (count($jwks) === 0) {
             throw new InvalidConfigurationException(
                 "No valid signing keys found in discovery at $uri"
             );

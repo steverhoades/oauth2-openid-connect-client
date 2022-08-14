@@ -312,7 +312,7 @@ final class OpenIDConnectProviderTest extends TestCase
     /**
      * @dataProvider invalidConfigurationDiscoveryResponsesProvider
      */
-    public function testConfigurationDiscoveryInvalidResponses(string $responseBody, string $exceptionMessageRegex): void
+    public function testConfigurationDiscoveryInvalidResponse(string $responseBody, string $exceptionMessageRegex): void
     {
         $this->mockParentClassForConfigurationDiscovery($responseBody);
 
