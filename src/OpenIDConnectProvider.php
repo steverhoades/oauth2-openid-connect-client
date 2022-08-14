@@ -10,12 +10,9 @@ use CoderCat\JWKToPEM\JWKConverter;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key;
 use League\OAuth2\Client\Grant\AbstractGrant;
-use Lcobucci\JWT\Token;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
-use InvalidArgumentException;
-use League\OAuth2\Client\Token\AccessTokenInterface;
 use OpenIDConnectClient\Exception\InvalidConfigurationException;
 use OpenIDConnectClient\Exception\InvalidTokenException;
 use OpenIDConnectClient\Validator\EqualsTo;
@@ -248,19 +245,19 @@ final class OpenIDConnectProvider extends GenericProvider
      * a given options array
      *
      * @param string $issuer
-     * @param array $options
-     * @return array
+     * @param array<string> $options
+     * @return array<string>
      * @throws InvalidConfigurationException
      * @throws Base64DecodeException
      * @throws JWKConverterException
      * @throws IdentityProviderException
      */
-    protected function discoverConfiguration($issuer, $options)
+    public function discoverConfiguration(string $issuer, array $options): array
     {
         $uri = $issuer . '/.well-known/openid-configuration';
         $request = $this->getRequest(self::METHOD_GET, $uri);
         $response = $this->getParsedResponse($request);
-        if (false === is_array($response)) {
+        if (is_array($response) === false) {
             throw new InvalidConfigurationException(
                 'Invalid response received from discovery. Expected JSON.'
             );
@@ -287,18 +284,20 @@ final class OpenIDConnectProvider extends GenericProvider
         ];
 
         foreach($optionMapping as $optionKey => $responseKey) {
-            if($responseKey['required'] && !isset($response[$responseKey['name']])) {
-                throw new InvalidConfigurationException(
-                    "Parameter {$responseKey['name']} missing in discovery configuration at $uri"
-                );
+            if(!isset($response[$responseKey['name']])) {
+                if($responseKey['required']) {
+                    throw new InvalidConfigurationException(
+                        "Required parameter {$responseKey['name']} missing in discovery configuration at $uri"
+                    );
+                } else continue;
             }
 
             $options[$optionKey] = $response[$responseKey['name']];
         }
 
         // Validate scopes
-        $scopesSupported = $response["scopes_supported"];
-        if(isset($scopesSupported)) {
+        if(isset($response["scopes_supported"])) {
+            $scopesSupported = $response["scopes_supported"];
             foreach($options['scopes'] as $scope) {
                 if(!in_array($scope, $scopesSupported)) {
                     throw new InvalidConfigurationException(
@@ -311,14 +310,14 @@ final class OpenIDConnectProvider extends GenericProvider
         // Set public key
         if(!isset($response["jwks_uri"])) {
             throw new InvalidConfigurationException(
-                "Parameter jwks_uri missing in discovery configuration at $uri"
+                "Required parameter jwks_uri missing in discovery configuration at $uri"
             );
         }
         $jwksUri = $response["jwks_uri"];
 
         $jwksRequest = $this->getRequest(self::METHOD_GET, $jwksUri);
         $jwksResponse = $this->getParsedResponse($jwksRequest);
-        if (false === is_array($jwksResponse) || false === is_array($jwksResponse['keys'])) {
+        if (is_array($jwksResponse) === false || is_array($jwksResponse['keys']) === false) {
             throw new InvalidConfigurationException(
                 'Invalid response received from discovery. Expected JSON.'
             );
