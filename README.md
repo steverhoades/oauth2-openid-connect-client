@@ -7,7 +7,7 @@ This package uses the PHP League's [OAuth2 Client](https://github.com/thephpleag
 The following versions of PHP are supported.
 
 * PHP 7.4
-* PHP 8.0 (coming soon, needs use `lcobucci\jwt:v4.1`)
+* PHP 8.0
 
 ## Usage
 You may test your OpenID Connect Client against [bshaffer's demo oauth2 server](https://github.com/bshaffer/oauth2-demo-php).

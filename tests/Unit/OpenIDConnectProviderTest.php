@@ -170,7 +170,7 @@ final class OpenIDConnectProviderTest extends TestCase
         // OpenIDConnectProvider::getAccessToken
         $this->signer
             ->expects(self::once())
-            ->method('getAlgorithmId')
+            ->method('algorithmId')
             ->willReturn('HS256');
 
         $this->signer
@@ -222,7 +222,7 @@ final class OpenIDConnectProviderTest extends TestCase
         // OpenIDConnectProvider::getAccessToken
         $this->signer
             ->expects(self::exactly(2))
-            ->method('getAlgorithmId')
+            ->method('algorithmId')
             ->willReturn('HS256');
 
         $this->signer
@@ -253,7 +253,7 @@ final class OpenIDConnectProviderTest extends TestCase
         // OpenIDConnectProvider::getAccessToken
         $this->signer
             ->expects(self::once())
-            ->method('getAlgorithmId')
+            ->method('algorithmId')
             ->willReturn('HS256');
 
         $this->signer
