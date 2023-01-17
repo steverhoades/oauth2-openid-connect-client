@@ -17,6 +17,7 @@ use League\OAuth2\Client\Grant\GrantFactory;
 use League\OAuth2\Client\OptionProvider\PostAuthOptionProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\RequestFactory;
+use OpenIDConnectClient\Exception\InvalidConfigurationException;
 use OpenIDConnectClient\Exception\InvalidTokenException;
 use OpenIDConnectClient\OpenIDConnectProvider;
 use OpenIDConnectClient\Validator\ValidatorChain;
@@ -101,7 +102,7 @@ final class OpenIDConnectProviderTest extends TestCase
     /**
      * @dataProvider invalidConstructorArgumentsProvider
      */
-    public function testConstructorWithoutSignerThrowsException(array $options, array $collaborators): void
+    public function testConstructorWithInvalidArgumentsThrowsException(array $options, array $collaborators): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -308,6 +309,84 @@ final class OpenIDConnectProviderTest extends TestCase
         self::assertTrue($chain->hasValidator(RegisteredClaims::SUBJECT));
     }
 
+    /**
+     * @dataProvider invalidConfigurationDiscoveryResponsesProvider
+     */
+    public function testConfigurationDiscoveryInvalidResponse(string $responseBody, string $exceptionMessageRegex): void
+    {
+        $this->mockParentClassForConfigurationDiscovery($responseBody);
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessageMatches($exceptionMessageRegex);
+        $this->provider->discoverConfiguration("https://google.com/", []);
+    }
+
+    public function testConfigurationDiscoveryMissingScopes(): void
+    {
+        $this->mockParentClassForConfigurationDiscovery(json_encode([
+            'issuer' => 'some issuer',
+            'authorization_endpoint' => 'authz endpoint',
+            'token_endpoint' => 'token endpoint',
+            'scopes_supported' => [ 'supported' ]
+        ]));
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessageMatches('/Scope not supported is not supported .*/');
+        $this->provider->discoverConfiguration("https://google.com", ['scopes' => ['supported', 'not supported']]);
+    }
+
+    public function invalidConfigurationDiscoveryResponsesProvider(): iterable
+    {
+        yield 'not JSON' => [
+            'string',
+            '/Invalid response received from discovery. Expected JSON./'
+        ];
+        yield 'not JSON array' => [
+            json_encode('a'),
+            '/Invalid response received from discovery. Expected JSON./'
+        ];
+        yield 'missing issuer' => [
+            json_encode([
+                //'issuer' => 'some issuer',
+                'authorization_endpoint' => 'authz endpoint',
+                'token_endpoint' => 'token endpoint',
+                'userinfo_endpoint' => 'userinfo endpoint',
+                'jwks_uri' => 'some uri'
+            ]),
+            '/Required parameter issuer.*/'
+        ];
+        yield 'missing authorization_endpoint' => [
+            json_encode([
+                'issuer' => 'some issuer',
+                //'authorization_endpoint' => 'authz endpoint',
+                'token_endpoint' => 'token endpoint',
+                'userinfo_endpoint' => 'userinfo endpoint',
+                'jwks_uri' => 'some uri'
+            ]),
+            '/Required parameter authorization_endpoint.*/'
+        ];
+        yield 'missing token_endpoint' => [
+            json_encode([
+                'issuer' => 'some issuer',
+                'authorization_endpoint' => 'authz endpoint',
+                //'token_endpoint' => 'token endpoint',
+                'userinfo_endpoint' => 'userinfo endpoint',
+                'jwks_uri' => 'some uri'
+            ]),
+            '/Required parameter token_endpoint.*/'
+        ];
+        yield 'missing jwks_uri' => [
+            json_encode([
+                'issuer' => 'some issuer',
+                'authorization_endpoint' => 'authz endpoint',
+                'token_endpoint' => 'token endpoint',
+                'userinfo_endpoint' => 'userinfo endpoint',
+                //'jwks_uri' => 'some uri'
+            ]),
+            '/Required parameter jwks_uri.*/'
+        ];
+    }
+
     public function invalidConstructorArgumentsProvider(): iterable
     {
         $signer = $this->createMock(Signer::class);
@@ -402,6 +481,27 @@ final class OpenIDConnectProviderTest extends TestCase
                 'signer' => $signer,
             ],
         ];
+    }
+
+    private function mockParentClassForConfigurationDiscovery(string $responseBody): void
+    {
+        $request = $this->createMock(Request::class);
+        $this->requestFactory
+            ->expects(self::once())
+            ->method('getRequestWithOptions')
+            ->willReturn($request);
+
+        // AbstractProvider::getParsedResponse
+        $response = $this->createMock(ResponseInterface::class);
+        $this->httpClient
+            ->expects(self::once())
+            ->method('send')
+            ->willReturn($response);
+
+        $response
+            ->expects(self::once())
+            ->method('getBody')
+            ->willReturn($responseBody);
     }
 
     /**

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace OpenIDConnectClient;
 
+use CoderCat\JWKToPEM\Exception\Base64DecodeException;
+use CoderCat\JWKToPEM\Exception\JWKConverterException;
+use CoderCat\JWKToPEM\JWKConverter;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key;
@@ -11,7 +14,10 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use League\OAuth2\Client\Grant\AbstractGrant;
+use League\OAuth2\Client\Provider\AbstractProvider;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
+use OpenIDConnectClient\Exception\InvalidConfigurationException;
 use OpenIDConnectClient\Exception\InvalidTokenException;
 use OpenIDConnectClient\Validator\EqualsTo;
 use OpenIDConnectClient\Validator\EqualsToOrContains;
@@ -36,6 +42,15 @@ final class OpenIDConnectProvider extends GenericProvider
      */
     public function __construct(array $options = [], array $collaborators = [])
     {
+        // This is not the most elegant construct, but this will partially setup the current
+        // class, and specifically the HttpClient, without going through GenericProvider's
+        // constructor. That constructor performs validation of the $options, but we might want
+        // to dynamically obtain them in discovery, but for discovery we need the HttpClient.
+        //
+        // An alternative solution would be to extend AbstractProvider directly, but that mainly
+        // brings a lot of "plumbing" for standard properties and methods.
+        AbstractProvider::__construct($options, $collaborators);
+
         Assert::keyExists($collaborators, 'signer');
         Assert::isInstanceOf($collaborators['signer'], Signer::class);
 
@@ -67,6 +82,11 @@ final class OpenIDConnectProvider extends GenericProvider
 
         if (!in_array('openid', $options['scopes'])) {
             $options['scopes'][] = 'openid';
+        }
+
+        // Using discovery
+        if (isset($options['issuer'])) {
+            $options = $this->discoverConfiguration($options["issuer"], $options);
         }
 
         parent::__construct($options, $collaborators);
@@ -244,5 +264,118 @@ final class OpenIDConnectProvider extends GenericProvider
     protected function createAccessToken(array $response, AbstractGrant $grant): AccessToken
     {
         return new AccessToken($response);
+    }
+
+    /**
+     * Retrieves OpenID Connect configuration from a discovery endpoint
+     * (<$issuer>/.well-known/openid-configuration) and merges it into
+     * a given options array
+     *
+     * @param string $issuer
+     * @param array<string> $options
+     * @return array<string>
+     * @throws InvalidConfigurationException
+     * @throws Base64DecodeException
+     * @throws JWKConverterException
+     * @throws IdentityProviderException
+     */
+    public function discoverConfiguration(string $issuer, array $options): array
+    {
+        $uri = $issuer . '/.well-known/openid-configuration';
+        $request = $this->getRequest(self::METHOD_GET, $uri);
+        $response = $this->getParsedResponse($request);
+        if (is_array($response) === false) {
+            throw new InvalidConfigurationException(
+                'Invalid response received from discovery. Expected JSON.'
+            );
+        }
+
+        // Map configuration to options
+        $optionMapping = [
+            'idTokenIssuer' => [
+                'name' => 'issuer',
+                'required' => true
+            ],
+            'urlAuthorize' => [
+                'name' => 'authorization_endpoint',
+                'required' => true
+            ],
+            'urlAccessToken' => [
+                'name' => 'token_endpoint',
+                'required' => true
+            ],
+            'urlResourceOwnerDetails' => [
+                'name' => 'userinfo_endpoint',
+                'required' => false
+            ],
+        ];
+
+        foreach ($optionMapping as $optionKey => $responseKey) {
+            if (!isset($response[$responseKey['name']])) {
+                if ($responseKey['required']) {
+                    throw new InvalidConfigurationException(
+                        "Required parameter {$responseKey['name']} missing in discovery configuration at $uri"
+                    );
+                } else {
+                    continue;
+                }
+            }
+
+            $options[$optionKey] = $response[$responseKey['name']];
+        }
+
+        // Validate scopes
+        if (isset($response["scopes_supported"])) {
+            $scopesSupported = $response["scopes_supported"];
+            foreach ($options['scopes'] as $scope) {
+                if (!in_array($scope, $scopesSupported)) {
+                    throw new InvalidConfigurationException(
+                        "Scope $scope is not supported in discovery configuration at $uri"
+                    );
+                }
+            }
+        }
+
+        // Set public key
+        if (!isset($response["jwks_uri"])) {
+            throw new InvalidConfigurationException(
+                "Required parameter jwks_uri missing in discovery configuration at $uri"
+            );
+        }
+        $jwksUri = $response["jwks_uri"];
+
+        $jwksRequest = $this->getRequest(self::METHOD_GET, $jwksUri);
+        $jwksResponse = $this->getParsedResponse($jwksRequest);
+        if (is_array($jwksResponse) === false || is_array($jwksResponse['keys']) === false) {
+            throw new InvalidConfigurationException(
+                'Invalid response received from discovery. Expected JSON.'
+            );
+        }
+
+        // We will only need signature keys supported by our signer
+        $jwks = array_filter($jwksResponse['keys'], function ($jwk) {
+            if (!is_array($jwk)) {
+                return false;
+            }
+            if (isset($jwk['use']) && $jwk['use'] !== 'sig') {
+                return false;
+            }
+            if ($jwk['alg'] !== $this->signer->getAlgorithmId()) {
+                return false;
+            }
+
+            return true;
+        });
+
+        if (count($jwks) === 0) {
+            throw new InvalidConfigurationException(
+                "No valid signing keys found in discovery at $uri"
+            );
+        }
+
+        $jwkConverter = new JWKConverter();
+        $options['publicKey'] = $jwkConverter->multipleToPEM($jwks);
+
+        return $options;
     }
 }
