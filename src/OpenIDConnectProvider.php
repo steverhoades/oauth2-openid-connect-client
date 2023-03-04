@@ -21,7 +21,7 @@ use OpenIDConnectClient\Validator\NotEmpty;
 use OpenIDConnectClient\Validator\ValidatorChain;
 use Webmozart\Assert\Assert;
 
-final class OpenIDConnectProvider extends GenericProvider
+class OpenIDConnectProvider extends GenericProvider
 {
     private ValidatorChain $validatorChain;
     private Signer $signer;
