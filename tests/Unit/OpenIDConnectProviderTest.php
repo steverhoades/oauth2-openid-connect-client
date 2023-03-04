@@ -478,4 +478,52 @@ final class OpenIDConnectProviderTest extends TestCase
             ->with(self::identicalTo('content-type'))
             ->willReturn('some content-type');
     }
+
+    public function dataForRefreshTokenRetrieval(): array
+    {
+        return [
+            '1. refresh-token grant' => [
+                'grant' => 'refresh_token',
+                'exception' => null,
+                'exceptionMessage' => null,
+            ],
+            '2. access-token grant' => [
+                'grant' => 'access-code',
+                'exception' => InvalidTokenException::class,
+                'exceptionMessage' => 'Received an invalid id_token from authorization server',
+            ],
+        ];
+    }
+
+    /**
+     * @param string $grantName Grant specified by its name
+     * @param string|null $expectedException
+     * @param string|null $expectedExceptionMessage
+     *
+     * @dataProvider dataForRefreshTokenRetrieval
+     */
+    public function testRefreshTokenRetrieval(
+        string $grantName,
+        ?string $expectedException = null,
+        ?string $expectedExceptionMessage = null
+    ) {
+        $grant = $this->createMock(AbstractGrant::class);
+        $grant
+            ->method('__toString')
+            ->willReturn($grantName);
+
+        $this->mockParentClassForAccessToken($grant, []);
+
+        if ($expectedException) {
+            $this->expectException($expectedException);
+        }
+        if ($expectedExceptionMessage) {
+            $this->expectExceptionMessage($expectedExceptionMessage);
+        }
+        $accessToken = $this->provider->getAccessToken($grant);
+
+        if (!$expectedException) {
+            $this->assertEquals('some access-token', $accessToken->getToken());
+        }
+    }
 }
