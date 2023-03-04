@@ -23,6 +23,8 @@ use Webmozart\Assert\Assert;
 
 final class OpenIDConnectProvider extends GenericProvider
 {
+    const EXCLUDED_GRANTS = ['refresh_token'];
+
     private ValidatorChain $validatorChain;
     private Signer $signer;
 
@@ -123,6 +125,10 @@ final class OpenIDConnectProvider extends GenericProvider
     public function getAccessToken($grant, array $options = [])
     {
         $accessToken = parent::getAccessToken($grant, $options);
+        if (in_array((string) $grant, self::EXCLUDED_GRANTS)) {
+
+            return $accessToken;
+        }
         if (!$accessToken instanceof AccessToken) {
             throw new InvalidTokenException('Received wrong access token type');
         }
