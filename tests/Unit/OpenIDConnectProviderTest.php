@@ -103,6 +103,10 @@ final class OpenIDConnectProviderTest extends TestCase
      */
     public function testConstructorWithoutSignerThrowsException(array $options, array $collaborators): void
     {
+        if (isset($collaborators['signers']) && $collaborators['signers'] === 'create') {
+            $collaborators['signers'] = $this->createMock(Signer::class);
+        }
+
         $this->expectException(InvalidArgumentException::class);
 
         $this->provider = new OpenIDConnectProvider($options, $collaborators);
@@ -308,9 +312,8 @@ final class OpenIDConnectProviderTest extends TestCase
         self::assertTrue($chain->hasValidator(RegisteredClaims::SUBJECT));
     }
 
-    public function invalidConstructorArgumentsProvider(): iterable
+    public static function invalidConstructorArgumentsProvider(): iterable
     {
-        $signer = $this->createMock(Signer::class);
 
         yield 'signer is missing' => [
             [
@@ -347,7 +350,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => $signer,
+                'signer' => 'create',
             ],
         ];
 
@@ -360,7 +363,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => $signer,
+                'signer' => 'create',
             ],
         ];
 
@@ -373,7 +376,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => $signer,
+                'signer' => 'create',
             ],
         ];
 
@@ -386,7 +389,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => $signer,
+                'signer' => 'create',
             ],
         ];
 
@@ -399,7 +402,7 @@ final class OpenIDConnectProviderTest extends TestCase
                 //'idTokenIssuer' => 'some idTokenIssuer',
             ],
             [
-                'signer' => $signer,
+                'signer' => 'create',
             ],
         ];
     }

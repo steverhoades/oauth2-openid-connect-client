@@ -10,7 +10,7 @@ final class EqualsToOrContainsTest extends AbstractValidatorTester
 {
     protected static string $classUnderTest = EqualsToOrContains::class;
 
-    public function isValidArgumentExpectationsProvider(): iterable
+    public static function isValidArgumentExpectationsProvider(): iterable
     {
         yield ["\n", "\n", true];
         yield ["\n\t", "\n\t", true];
@@ -50,7 +50,7 @@ final class EqualsToOrContainsTest extends AbstractValidatorTester
         yield [0, [456, false], false];
     }
 
-    public function isValidInvalidArgumentProvider(): iterable
+    public static function isValidInvalidArgumentProvider(): iterable
     {
         yield [(object)['field' => 1], ''];
         yield [['array' => 1], ['array' => 1]];
