@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\DataSet;
 use Lcobucci\JWT\Token\Plain;
+use Lcobucci\JWT\UnencryptedToken;
 use OpenIDConnectClient\Validator\ValidatorChain;
 use OpenIDConnectClient\Validator\ValidatorInterface;
 use PHPUnit\Framework\TestCase;
@@ -129,40 +130,23 @@ final class ValidatorChainTest extends TestCase
         $this->chain->addValidator($firstValidator);
         $this->chain->addValidator($secondValidator);
 
-        $token = $this->createMock(Plain::class);
-        $claims = $this->createMock(DataSet::class);
+        $token = $this->createMock(UnencryptedToken::class);
+        $claims = new DataSet([
+            'v1' => 'some value 1',
+            'v2' => 'some value 2'
+        ], 'encodedstring');
         $token
             ->expects(self::once())
             ->method('claims')
             ->willReturn($claims);
 
-        $claims
-            ->expects(self::exactly(3))
-            ->method('has')
-            ->willReturnMap(
-                [
-                    ['v1', true],
-                    ['v2', true],
-                ],
-            );
-
-        $claims
-            ->expects(self::exactly(2))
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['v1', null, 'some value 1'],
-                    ['v2', null, 'some value 2'],
-                ],
-            );
-
-        $claims = [
+        $checkedClaims = [
             'v1' => 'value 1',
             'v2' => 'value 2',
             'unused' => 'something unused',
         ];
 
-        self::assertTrue($this->chain->validate($claims, $token));
+        self::assertTrue($this->chain->validate($checkedClaims, $token));
         self::assertCount(0, $this->chain->getMessages());
     }
 
@@ -231,40 +215,22 @@ final class ValidatorChainTest extends TestCase
         $this->chain->addValidator($thirdValidator);
         $this->chain->addValidator($fourthValidator);
 
-        $token = $this->createMock(Plain::class);
-        $claims = $this->createMock(DataSet::class);
+        $token = $this->createMock(UnencryptedToken::class);
+        $claims = new DataSet([
+            'v2' => 'some value 2',
+        ], 'encrypted string');
         $token
             ->expects(self::once())
             ->method('claims')
             ->willReturn($claims);
 
-        $claims
-            ->expects(self::exactly(3))
-            ->method('has')
-            ->willReturnMap(
-                [
-                    ['v1', false],
-                    ['v2', true],
-                    ['v4', false],
-                ],
-            );
-
-        $claims
-            ->expects(self::once())
-            ->method('get')
-            ->willReturnMap(
-                [
-                    ['v2', null, 'some value 2'],
-                ],
-            );
-
-        $claims = [
+        $checkedClaims = [
             'v1' => 'value 1',
             'v2' => 'value 2',
             'v4' => 'value 4',
         ];
 
-        self::assertFalse($this->chain->validate($claims, $token));
+        self::assertFalse($this->chain->validate($checkedClaims, $token));
 
         $messages = $this->chain->getMessages();
         self::assertCount(2, $messages);

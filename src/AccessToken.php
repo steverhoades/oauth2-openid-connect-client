@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace OpenIDConnectClient;
 
 use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Token\Plain;
 use League\OAuth2\Client\Token\AccessToken as LeagueAccessToken;
 use OpenIDConnectClient\Exception\InvalidTokenException;
@@ -20,9 +22,7 @@ final class AccessToken extends LeagueAccessToken
 
         if (isset($this->values['id_token'])) {
             // Signature is validated outside, this just parses the token
-            $token = Configuration::forUnsecuredSigner()
-                ->parser()
-                ->parse($this->values['id_token']);
+            $token = (new Parser(new JoseEncoder()))->parse($this->values['id_token']);
 
             if (!$token instanceof Plain) {
                 throw new InvalidTokenException('Received wrong token type (expected Plain)');

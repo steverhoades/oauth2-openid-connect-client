@@ -10,7 +10,7 @@ final class LesserOrEqualsToTest extends AbstractValidatorTester
 {
     protected static string $classUnderTest = LesserOrEqualsTo::class;
 
-    public function isValidArgumentExpectationsProvider(): iterable
+    public static function isValidArgumentExpectationsProvider(): iterable
     {
         yield ['123', '122', true];
         yield [123, '122', true];
@@ -27,7 +27,7 @@ final class LesserOrEqualsToTest extends AbstractValidatorTester
         yield [null, 123, false];
     }
 
-    public function isValidInvalidArgumentProvider(): iterable
+    public static function isValidInvalidArgumentProvider(): iterable
     {
         yield [123, -2.3];
         yield [123, 'some string'];

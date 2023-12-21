@@ -10,7 +10,7 @@ final class EqualsToTest extends AbstractValidatorTester
 {
     protected static string $classUnderTest = EqualsTo::class;
 
-    public function isValidArgumentExpectationsProvider(): iterable
+    public static function isValidArgumentExpectationsProvider(): iterable
     {
         yield ["\n", "\n", true];
         yield ["\n\t", "\n\t", true];
@@ -37,7 +37,7 @@ final class EqualsToTest extends AbstractValidatorTester
         yield [null, true, false];
     }
 
-    public function isValidInvalidArgumentProvider(): iterable
+    public static function isValidInvalidArgumentProvider(): iterable
     {
         yield [(object)['field' => 1], (object)['field' => 1], true];
         yield [['array' => 1], ['array' => 1], true];

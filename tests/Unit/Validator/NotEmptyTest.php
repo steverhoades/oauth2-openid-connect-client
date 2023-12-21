@@ -10,7 +10,7 @@ final class NotEmptyTest extends AbstractValidatorTester
 {
     protected static string $classUnderTest = NotEmpty::class;
 
-    public function isValidArgumentExpectationsProvider(): iterable
+    public static function isValidArgumentExpectationsProvider(): iterable
     {
         yield [null, 'not empty', true];
         yield [null, ' ', true];
@@ -30,9 +30,9 @@ final class NotEmptyTest extends AbstractValidatorTester
         yield [null, false, false];
     }
 
-    public function isValidInvalidArgumentProvider(): iterable
+    public static function isValidInvalidArgumentProvider(): iterable
     {
         // NotEmpty can process any type
-        return [];
+        return [['', '']];
     }
 }
